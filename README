@@ -5,10 +5,11 @@ If you want it to do something else please ask.
 
 I call it something like:
 
-perl -Iblib/lib -MBioGRID::TAB2 -e "print BioGRID::TAB2::file('../../Downloads/BIOGRID-ORGANISM-Saccharomyces_cerevisiae-3.1.87.tab2.txt')->nodes_edge_count_report({organism=>559292});"
+perl -Iblib/lib -MBioGRID::TAB2 -e "print BioGRID::TAB2::file('../../Downloads/BIOGRID-ORGANISM-Saccharomyces_cerevisiae-3.1.87.tab2.txt')->report(36669);"
 
 
 
+* License
 
 Copyright 2012 The Trustees of Princeton University
 

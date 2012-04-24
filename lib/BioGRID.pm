@@ -8,8 +8,7 @@ use BioGRID::_edge;
 
 sub new{
     my $c=shift;
-    my $s=
-      {edge=>{},node=>{}};
+    my $s={edge=>{},node=>{}};
     return bless $s,$c;
 };
 
@@ -42,6 +41,45 @@ sub add_interaction{ # edge
     return $i;
 }
 
+sub interactions{
+    my $s=shift;
+    my @n=@_;
+
+    return values %{$s->{edge}} if(0==scalar @n);
+
+    # if we have arguments, assume they are nodes, and return all
+    # edges that have any of the given nodes
+    my @e;
+    for my $e($s->interactions()){
+	if($e->contains_any_interactor(@n)){
+	    push @e,$e;
+	}
+    }
+    return @e;
+}
+
+# returns a list of nodes that connected to the given node
+sub connected_interactors{
+    my $s=shift;
+    my $n=shift;
+    my %n;
+
+    for my $e($s->interactions()){
+	my $o=$e->other_interactor($n);
+	if($o){
+	    $n{$o->unique()}=$o;
+	}
+    }
+    return values %n;
+}
+
+sub interactor{
+    my $s=shift;
+    my $n=shift;
+
+    return ('' eq ref $n)?$s->{node}->{$n}:$n;
+}
+
 # returns the number of interactions
 sub interaction_count{
     my $s=shift;
@@ -54,34 +92,16 @@ sub interactor_count{
     return scalar(keys %{$s->{node}});
 }
 
-sub nodes_edge_count{
+
+sub report{
     my $s=shift;
-    my $m=shift; # match hash
-    my %c; # node->unique() => count edges node is in
+    my $n=$s->interactor(shift);
 
-    for(values %{$s->{edge}}){
-	my $a=$_->interactor_a();
-	my $b=$_->interactor_b();
+    my @n=$s->connected_interactors($n);
+    my @e=$s->interactions(@n);
 
-	$c{$a->unique()}++ if(!$m or $a->match_all($m));
-	$c{$b->unique()}++ if(!$m or $b->match_all($m));
-    }
-
-#    warn 'foo ',$m,' ',Dumper \%c;
-    return \%c;
+    warn sprintf("%s n:%d e:%d",$n->human(),scalar(@n),scalar(@e));
 }
 
-
-sub nodes_edge_count_report{
-    my $s=shift;
-    my $t=$s->nodes_edge_count(shift);
-
-   my $out='';
-    while(my ($id,$c)=each %$t){
-	$out .= $s->{node}->{$id}->human() . ":$c\n";
-    }
-
-    return $out;
-}
 
 return 1;
