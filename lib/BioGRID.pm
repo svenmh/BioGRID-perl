@@ -54,7 +54,7 @@ sub interactor_count{
     return scalar(keys %{$s->{node}});
 }
 
-sub node_report{
+sub nodes_edge_count{
     my $s=shift;
     my $m=shift; # match hash
     my %c; # node->unique() => count edges node is in
@@ -63,13 +63,21 @@ sub node_report{
 	my $a=$_->interactor_a();
 	my $b=$_->interactor_b();
 
-
-	$c{$a->unique()}++ if($m and $a->match_all($m));
-	$c{$b->unique()}++ if($m and $b->match_all($m));
+	$c{$a->unique()}++ if(!$m or $a->match_all($m));
+	$c{$b->unique()}++ if(!$m or $b->match_all($m));
     }
 
-    my $out='';
-    while(my ($id,$c)=each %c){
+#    warn 'foo ',$m,' ',Dumper \%c;
+    return \%c;
+}
+
+
+sub nodes_edge_count_report{
+    my $s=shift;
+    my $t=$s->nodes_edge_count(shift);
+
+   my $out='';
+    while(my ($id,$c)=each %$t){
 	$out .= $s->{node}->{$id}->human() . ":$c\n";
     }
 

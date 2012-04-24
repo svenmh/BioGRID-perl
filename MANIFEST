@@ -1,0 +1,8 @@
+README
+lib/BioGRID.pm
+lib/BioGRID/_node.pm
+lib/BioGRID/_edge.pm
+lib/BioGRID/TAB2.pm
+Makefile.PL
+t/TAB2.t
+t/yeast.tab2.txt

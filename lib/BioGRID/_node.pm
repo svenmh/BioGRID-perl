@@ -17,7 +17,7 @@ sub unique{
 # return human readable rep
 sub human{
     my $s=shift;
-    return $s->{systematic_name};
+    return $s->{official_symbol};
 }
 
 sub match_all{

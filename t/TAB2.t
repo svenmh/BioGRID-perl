@@ -7,27 +7,14 @@ use Data::Dumper;
 
 use BioGRID::TAB2;
 
-print "1..4\nok\n";
+print "1..6\nok\n";
 
 my $bg=BioGRID::TAB2::file('t/yeast.tab2.txt');
 
-if($bg){
-    print "ok\n";
-}else{
-    print "not ok\n";
-}
+print $bg?"ok\n":"not ok\n";
+print ((2==$bg->interaction_count())?"ok\n":"not ok\n");
+print ((2==$bg->interactor_count())?"ok\n":"not ok\n");
 
-if(2==$bg->interaction_count()){
-    print "ok\n";
-}else{
-    print "not ok\n";
-}
-
-if(2==$bg->interactor_count()){
-    print "ok\n";
-}else{
-    print "not ok\n";
-}
-
-warn $bg->node_report({organism=>559292});
-#warn Dumper $bg;
+my $r=$bg->nodes_edge_count({organism=>559292});
+print ((2==$r->{34272})?"ok\n":"not ok\n");
+print ((2==$r->{31676})?"ok\n":"not ok\n");
