@@ -35,13 +35,29 @@ sub contains_interactor{
     return undef;
 }
 
-sub contains_any_interactor{
+sub contains_any_interactors{
     my $s=shift;
     my @n=@_;
 
     for my $n(@n){
-	return $s if($s->contains_interactor($n));
+	return $n if($s->contains_interactor($n));
     }
+    return undef;
+}
+
+sub contains_any2_interactors{
+    my $s=shift;
+    my @n=@_;
+
+    my $have=$s->contains_any_interactors(@n);
+    if($have){
+	my $hid=$have->unique();
+	for my $n(@n){
+	    next if($n->unique()==$hid);
+	    return $s if($s->contains_interactor($n));
+	}
+    }
+
     return undef;
 }
 

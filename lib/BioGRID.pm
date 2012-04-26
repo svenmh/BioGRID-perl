@@ -41,17 +41,22 @@ sub add_interaction{ # edge
     return $i;
 }
 
+sub interactors{
+    my $s=shift;
+    return values %{$s->{node}};
+}
+
 sub interactions{
     my $s=shift;
     my @n=@_;
 
     return values %{$s->{edge}} if(0==scalar @n);
 
-    # if we have arguments, assume they are nodes, and return all
-    # edges that have any of the given nodes
+    # if we more have arguments, assume they are nodes, and return all
+    # edges both nodes frome it the list.
     my @e;
     for my $e($s->interactions()){
-	if($e->contains_any_interactor(@n)){
+	if($e->contains_any2_interactors(@n)){
 	    push @e,$e;
 	}
     }
@@ -100,8 +105,19 @@ sub report{
     my @n=$s->connected_interactors($n);
     my @e=$s->interactions(@n);
 
-    warn sprintf("%s n:%d e:%d",$n->human(),scalar(@n),scalar(@e));
+    return sprintf("%s\t%d\t%d",$n->human(),scalar(@n),scalar(@e));
 }
 
+sub report_all{
+    my $s=shift;
+
+    local $/;
+    for my $n($s->interactors()){
+	warn $n->human() . "\n";
+	my $got=$s->report($n) . "\n";
+	warn $got;
+	print $got;
+    }
+}
 
 return 1;
