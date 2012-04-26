@@ -23,41 +23,29 @@ sub interactor_b{
     return $s->{node_b};
 }
 
-sub contains_interactor{
-    my $s=shift;
-    my $n=shift;
+=item $interaction->contains_interactors(@interactors)
 
-    if(($n->unique() eq $s->interactor_a()->unique()) ||
-       ($n->unique() eq $s->interactor_b()->unique()) ){
-	return $s;
-    }
+Returns itself if C<$interaction> interactors are both is the
+C<@interactors> list.  Otherwise returns C<undef>.
 
-    return undef;
-}
-
-sub contains_any_interactors{
-    my $s=shift;
+=cut
+sub contains_interactors{
+    my $e=shift;
     my @n=@_;
+
+    my $have_a=undef;
+    my $have_b=undef;
+
+    my $id_a=$e->interactor_a()->unique();
+    my $id_b=$e->interactor_b()->unique();
 
     for my $n(@n){
-	return $n if($s->contains_interactor($n));
+	my $id_n=$n->unique();
+
+	$have_a=$n if(!$a && ($id_a==$id_n));
+	$have_b=$n if(!$b && ($id_b==$id_n));
+	return $e if($have_a && $have_b);
     }
-    return undef;
-}
-
-sub contains_any2_interactors{
-    my $s=shift;
-    my @n=@_;
-
-    my $have=$s->contains_any_interactors(@n);
-    if($have){
-	my $hid=$have->unique();
-	for my $n(@n){
-	    next if($n->unique()==$hid);
-	    return $s if($s->contains_interactor($n));
-	}
-    }
-
     return undef;
 }
 

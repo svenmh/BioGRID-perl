@@ -41,35 +41,53 @@ sub add_interaction{ # edge
     return $i;
 }
 
+=item $bg->interactors()
+
+Returns a list of all interactor objects (See L<BioGRID::_node>).
+
+=cut
 sub interactors{
-    my $s=shift;
-    return values %{$s->{node}};
+    my $bg=shift;
+    return values %{$bg->{node}};
 }
 
+=item $bg->interactions([@interactors])
+
+With no arguments returns a list of all interactions (See
+L<BioGRID::_edge>).
+
+Otherwise will return a list of interactors whos interactions are in
+C<@interactors>.
+
+=cut
 sub interactions{
-    my $s=shift;
+    my $bg=shift;
     my @n=@_;
 
-    return values %{$s->{edge}} if(0==scalar @n);
+    return values %{$bg->{edge}} if(0==scalar @n);
 
     # if we more have arguments, assume they are nodes, and return all
     # edges both nodes frome it the list.
     my @e;
-    for my $e($s->interactions()){
-	if($e->contains_any2_interactors(@n)){
+    for my $e($bg->interactions()){
+	if($e->contains_interactors(@n)){
 	    push @e,$e;
 	}
     }
     return @e;
 }
 
-# returns a list of nodes that connected to the given node
+=over $bg->connected_interactors($interaction)
+
+Returns a list of interactions that are connected to C<$interaction>.
+
+=cut
 sub connected_interactors{
-    my $s=shift;
+    my $bg=shift;
     my $n=shift;
     my %n;
 
-    for my $e($s->interactions()){
+    for my $e($bg->interactions()){
 	my $o=$e->other_interactor($n);
 	if($o){
 	    $n{$o->unique()}=$o;
@@ -78,11 +96,18 @@ sub connected_interactors{
     return values %n;
 }
 
+=item $bg->interactor($interactor)
+
+If C<$interaction> is a object it passes it through.  Otherwise it
+assumes it's a BioGRID interactor id and will to to return the
+interactor object.
+
+=cut
 sub interactor{
-    my $s=shift;
+    my $bg=shift;
     my $n=shift;
 
-    return ('' eq ref $n)?$s->{node}->{$n}:$n;
+    return ('' eq ref $n)?$bg->{node}->{$n}:$n;
 }
 
 # returns the number of interactions
@@ -97,26 +122,42 @@ sub interactor_count{
     return scalar(keys %{$s->{node}});
 }
 
+=item $bg->report($interactor)
 
+C<$interocator> is either interactor object or an interactor BioGRID
+identifier.
+
+Returns a tab seporated list of three items related to C<$interactor>.
+
+=over
+
+=item Readable protein name
+
+=item Number of interactors with this protein
+
+=item Plus number of interactor interactions
+
+=back
+
+=cut
 sub report{
-    my $s=shift;
-    my $n=$s->interactor(shift);
+    my $bg=shift;
+    my $n=$bg->interactor(shift);
 
-    my @n=$s->connected_interactors($n);
-    my @e=$s->interactions(@n);
+    my @n=$bg->connected_interactors($n);
+    unshift(@n,$n);
+    my @e=$bg->interactions(@n);
 
     return sprintf("%s\t%d\t%d",$n->human(),scalar(@n),scalar(@e));
 }
 
 sub report_all{
     my $s=shift;
+    local $|=1;
 
-    local $/;
+    print "#protein\tinteractors\tinteractor interactions\n";
     for my $n($s->interactors()){
-	warn $n->human() . "\n";
-	my $got=$s->report($n) . "\n";
-	warn $got;
-	print $got;
+	print $s->report($n) . "\n";
     }
 }
 

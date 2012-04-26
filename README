@@ -1,13 +1,26 @@
+* Description
+
 Needed to generate a report some about http://thebiogrid.org/ data, so
 I wrote this code.  Currently it doesn't do much but load TAB2 files
-into memory and tell you have many edges each node is connected to.
-If you want it to do something else please ask.
+and provide the reports I need, but maybe it will do more later.
 
-I call it something like:
+If you want it to do something else please ask, via github would be
+best: https://github.com/svenmh/BioGRID-perl
+
+* Examples
+
+** Report on PRB1
+The report() funciton takes a BioGRID id for input.
 
 perl -Iblib/lib -MBioGRID::TAB2 -e "print BioGRID::TAB2::file('../../Downloads/BIOGRID-ORGANISM-Saccharomyces_cerevisiae-3.1.87.tab2.txt')->report(36669);"
 
+** Report on everything (snooze)
+perl -Iblib/lib -MBioGRID::TAB2 -e "print BioGRID::TAB2::file('../../Downloads/BIOGRID-ORGANISM-Saccharomyces_cerevisiae-3.1.87.tab2.txt')->report_all();"
 
+* File format
+
+** TAB2 file format
+http://wiki.thebiogrid.org/doku.php/biogrid_tab_version_2.0
 
 * License
 
@@ -15,4 +28,3 @@ Copyright 2012 The Trustees of Princeton University
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
