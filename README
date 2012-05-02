@@ -1,8 +1,8 @@
 * Description
 
-Needed to generate a report some about http://thebiogrid.org/ data, so
-I wrote this code.  Currently it doesn't do much but load TAB2 files
-and provide the reports I need, but maybe it will do more later.
+Needed to generate a report on some http://thebiogrid.org/ data, so I
+wrote this code.  Currently it doesn't do much but load TAB2 files and
+provide the reports I need, but maybe it will do more later.
 
 If you want it to do something else please ask, via github would be
 best: https://github.com/svenmh/BioGRID-perl

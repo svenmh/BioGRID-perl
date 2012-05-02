@@ -6,44 +6,81 @@ use Data::Dumper;
 use BioGRID::_node;
 use BioGRID::_edge;
 
+=head1 NAME
+
+BioGRID - Container to hold BioGRID interactions
+
+=head1 DESCRIPTION
+
+Not really meant to be created directly, but who knows about the
+future.  Currenty see L<BioGRID::TAB2> for creating.
+
+=head1 METHODS
+
+=over
+
+=item my $bg=new BioGRID( );
+
+Create an empty BioGRID object.
+
+=cut
 sub new{
     my $c=shift;
     my $s={edge=>{},node=>{}};
     return bless $s,$c;
 };
 
-sub add_interactor{ # node
-    my $s=shift;
-    my $i=shift;
+=item $bg-E<gt>add_interactor($interactor)
 
-    if(exists $s->{node}->{$i->unique()}){
+C<$interactor> is a L<BioGRID::_node> object.  It takes the
+C<$interactor-E<gt>unique()> value and sees if it already has such an
+object.  If it does it will return the value it has.  If not, it will
+store it and return it.
+
+=cut
+sub add_interactor{
+    my $bg=shift;
+    my $n=shift;
+
+    if(exists $bg->{node}->{$n->unique()}){
 	# we already have this node
-	return $s->{node}->{$i->unique()};
+	return $bg->{node}->{$n->unique()};
     }
-    $s->{node}->{$i->unique()}=$i;
-    return $i;
+    $bg->{node}->{$n->unique()}=$n;
+    return $n;
 }
 
-sub add_interaction{ # edge
-    my $s=shift;
-    my $i=shift;
+=item $bg-E<gt>add_interaction($interaction)
 
-    if(exists $s->{edge}->{$i->unique()}){
+C<$interaction> is a L<BioGRID::_edge> object.  First it uses
+C<$interaction-E<gt>unique()> to test if it already has this data.
+If it does it will return the data we already have stored.
+
+If we don't already have such an item recorded, the interactors are
+passed through C<$bg-E<gt>add_interactor()> and then stores it, and
+returns it.
+
+=cut
+sub add_interaction{
+    my $bg=shift;
+    my $e=shift; # edge
+
+    if(exists $bg->{edge}->{$e->unique()}){
 	# we already have that edge
-	return $s->{edge}->{$i->unique()};
+	return $bg->{edge}->{$e->unique()};
     }
 
     # if we already have a node we want to use the existing one
-    $i->{node_a}=$s->add_interactor($i->interactor_a());
-    $i->{node_b}=$s->add_interactor($i->interactor_b());
+    $e->{node_a}=$bg->add_interactor($e->interactor_a());
+    $e->{node_b}=$bg->add_interactor($e->interactor_b());
 
-    $s->{edge}->{$i->unique()}=$i;
-    return $i;
+    $bg->{edge}->{$e->unique()}=$e;
+    return $e;
 }
 
-=item $bg->interactors()
+=item $bg-E<gt>interactors( )
 
-Returns a list of all interactor objects (See L<BioGRID::_node>).
+Returns a list of all interactor objects (L<BioGRID::_node>).
 
 =cut
 sub interactors{
@@ -51,10 +88,10 @@ sub interactors{
     return values %{$bg->{node}};
 }
 
-=item $bg->interactions([@interactors])
+=item $bg-E<gt>interactions([@interactors])
 
-With no arguments returns a list of all interactions (See
-L<BioGRID::_edge>).
+With no arguments returns a list of all interactions
+(L<BioGRID::_edge>).
 
 Otherwise will return a list of interactors whos interactions are in
 C<@interactors>.
@@ -77,7 +114,7 @@ sub interactions{
     return @e;
 }
 
-=over $bg->connected_interactors($interaction)
+=item $bg-E<gt>connected_interactors($interaction)
 
 Returns a list of interactions that are connected to C<$interaction>.
 
@@ -96,7 +133,7 @@ sub connected_interactors{
     return values %n;
 }
 
-=item $bg->interactor($interactor)
+=item $bg-E<gt>interactor($interactor)
 
 If C<$interaction> is a object it passes it through.  Otherwise it
 assumes it's a BioGRID interactor id and will to to return the
@@ -112,17 +149,17 @@ sub interactor{
 
 # returns the number of interactions
 sub interaction_count{
-    my $s=shift;
-    return scalar(keys %{$s->{edge}});
+    my $bg=shift;
+    return scalar(keys %{$bg->{edge}});
 }
 
 # returns the number of interactors
 sub interactor_count{
-    my $s=shift;
-    return scalar(keys %{$s->{node}});
+    my $bg=shift;
+    return scalar(keys %{$bg->{node}});
 }
 
-=item $bg->report($interactor)
+=item $bg-E<gt>report($interactor)
 
 C<$interocator> is either interactor object or an interactor BioGRID
 identifier.
@@ -151,14 +188,38 @@ sub report{
     return sprintf("%s\t%d\t%d",$n->human(),scalar(@n),scalar(@e));
 }
 
+=item $bg-E<gt>report_all( )
+
+Exectues C<$bg-E<gt>report()> on each interactor and outputs that data
+is a TSV file.
+
+=cut
 sub report_all{
-    my $s=shift;
+    my $bg=shift;
     local $|=1;
 
     print "#protein\tinteractors\tinteractor interactions\n";
-    for my $n($s->interactors()){
-	print $s->report($n) . "\n";
+    for my $n($bg->interactors()){
+	print $bg->report($n) . "\n";
     }
 }
 
 return 1;
+
+=back
+
+=head1 SEE ALSO
+
+L<BioGRID::TAB2>, L<BioGRID::_edge>, L<BioGRID::_node>,
+L<GitHub|https://github.com/svenmh/BioGRID-perl>, and
+L<BioGRID|http://thebiogrid.org/>
+
+
+=head1 COPYRIGHT
+
+Copyright 2012 The Trustees of Princeton University
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

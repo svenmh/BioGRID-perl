@@ -5,6 +5,21 @@ use Data::Dumper;
 
 use BioGRID;
 
+=head1 NAME
+
+BioGRID::TAB2 - Reads BioGRID TAB2 data and returns a L<BioGRID> object
+
+=head1 SYNOPSIS
+
+ use BioGRID::TAB2;
+ my $bg=BioGRID::TAB2::file('rest.tab2.txt');
+ $bg->report_all();
+
+=head1 METHODS
+
+=over
+
+=cut
 sub _node{
     my $o=shift; # 0 or 1
     return new BioGRID::_node
@@ -20,7 +35,12 @@ sub _node{
       );
 }
 
-# see http://wiki.thebiogrid.org/doku.php/biogrid_tab_version_2.0
+=item BioGRID::TAB2::line(@row)
+
+C<@row> is a singe TAB2 line split on the tab character.  Returns an
+L<BioGRID::_edge> object.
+
+=cut
 sub line{
     my $i=new BioGRID::_edge
       (
@@ -44,6 +64,12 @@ sub line{
     return $i;
 }
 
+=item BioGRID::TAB2::file($path)
+
+C<$path> is a path to a TAB2 file.  This loads this file into memory
+and returns a L<BioGRID> object with all the data.
+
+=cut
 sub file{
     my $f=shift;
     my $h;
@@ -65,3 +91,22 @@ sub file{
 }
 
 return 1;
+
+=back
+
+=head1 SEE ALSO
+
+L<BioGRID>, L<BioGRID TAB 2.0 Formatted
+Downloads|http://wiki.thebiogrid.org/doku.php/biogrid_tab_version_2.0>
+L<GitHub|https://github.com/svenmh/BioGRID-perl>, and
+L<BioGRID|http://thebiogrid.org/>
+
+
+=head1 COPYRIGHT
+
+Copyright 2012 The Trustees of Princeton University
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
