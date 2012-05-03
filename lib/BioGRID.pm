@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 
+use Term::ProgressBar;
+
 use BioGRID::_node;
 use BioGRID::_edge;
 
@@ -196,10 +198,24 @@ is a TSV file.
 =cut
 sub report_all{
     my $bg=shift;
+    my $pb=shift;
+
+    if($pb){
+	$pb=new Term::ProgressBar
+	  (
+	   {
+	    name=>'Report All',
+	    count=>$bg->interactor_count(),
+	    ETA=>'linear'
+	   }
+	  );
+    }
+
     local $|=1;
 
     print "#protein\tinteractors\tinteractor interactions\n";
     for my $n($bg->interactors()){
+	$pb->update() if($pb);
 	print $bg->report($n) . "\n";
     }
 }
