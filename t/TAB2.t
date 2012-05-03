@@ -16,5 +16,4 @@ print ((3==$bg->interaction_count())?"ok\n":"not ok\n");
 
 my $n=$bg->interactor(34518);
 print ('BioGRID::_node' eq ref($n)?"ok\n":"not ok\n");
-print (("LEO1\t2\t1" eq $bg->report($n))?"ok/n":"not ok/n");
-
+print (("LEO1\t559292\t2\t1" eq $bg->report($n))?"ok/n":"not ok/n");

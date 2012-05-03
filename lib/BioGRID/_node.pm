@@ -14,6 +14,11 @@ sub unique{
     return $s->{biogrid_id};
 }
 
+sub organism_id{
+    my $s=shift;
+    return $s->{organism};
+}
+
 # return human readable rep
 sub human{
     my $s=shift;

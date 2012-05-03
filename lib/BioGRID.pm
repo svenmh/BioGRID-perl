@@ -170,11 +170,13 @@ Returns a tab seporated list of three items related to C<$interactor>.
 
 =over
 
-=item Readable protein name
+=item Human readable human name
 
-=item Number of interactors with this protein
+=item Species id
 
-=item Plus number of interactor interactions
+=item Number connecting interactors
+
+=item Number of interactions, including interactor interactions
 
 =back
 
@@ -187,13 +189,14 @@ sub report{
     unshift(@n,$n);
     my @e=$bg->interactions(@n);
 
-    return sprintf("%s\t%d\t%d",$n->human(),scalar(@n),scalar(@e));
+    return sprintf("%s\t%d\t%d\t%d",$n->human(),$n->organism_id(),scalar(@n),scalar(@e));
 }
 
-=item $bg-E<gt>report_all( )
+=item $bg-E<gt>report_all([$progress])
 
 Exectues C<$bg-E<gt>report()> on each interactor and outputs that data
-is a TSV file.
+is a TSV file.  If C<$progress> has a true value it will display a
+progress bar.
 
 =cut
 sub report_all{
@@ -213,7 +216,7 @@ sub report_all{
 
     local $|=1;
 
-    print "#protein\tinteractors\tinteractor interactions\n";
+    printf("%s\t%s\t%s\t%s\n", qw/interactor organism_id interactor_count all_interactions_count/);
     for my $n($bg->interactors()){
 	$pb->update() if($pb);
 	print $bg->report($n) . "\n";
@@ -229,7 +232,6 @@ return 1;
 L<BioGRID::TAB2>, L<BioGRID::_edge>, L<BioGRID::_node>,
 L<GitHub|https://github.com/svenmh/BioGRID-perl>, and
 L<BioGRID|http://thebiogrid.org/>
-
 
 =head1 COPYRIGHT
 
